@@ -198,6 +198,10 @@ class Application extends _BaseApplication {
   /// Whether the app is enabled (installed and visible)
   /// or disabled (installed, but not visible)
   final bool enabled;
+  
+  final bool is2D;
+  
+  final String uri;
 
   factory Application._(Map<dynamic, dynamic> map) {
     if (map.length == 0) {
@@ -220,6 +224,8 @@ class Application extends _BaseApplication {
         installTimeMillis = map['install_time'] as int,
         updateTimeMillis = map['update_time'] as int,
         enabled = map['is_enabled'] as bool,
+        is2D = map['is_2d'] as bool,
+        uri = map['uri'] as String,
         category = _parseCategory(map['category']),
         super._fromMap(map);
 

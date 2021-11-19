@@ -155,7 +155,7 @@ public class DeviceAppsPlugin implements
         }
 
         PackageManager packageManager = context.getPackageManager();
-        List<PackageInfo> apps = packageManager.getInstalledPackages(0);
+        List<PackageInfo> apps = packageManager.getInstalledPackages(PackageManager.GET_META_DATA);
         List<Map<String, Object>> installedApps = new ArrayList<>(apps.size());
 
         for (PackageInfo packageInfo : apps) {
@@ -226,7 +226,7 @@ public class DeviceAppsPlugin implements
     private Map<String, Object> getApp(String packageName, boolean includeAppIcon) {
         try {
             PackageManager packageManager = context.getPackageManager();
-            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, 0);
+            PackageInfo packageInfo = packageManager.getPackageInfo(packageName, PackageManager.GET_META_DATA);
 
             return getAppData(packageManager,
                     packageInfo,
@@ -265,6 +265,31 @@ public class DeviceAppsPlugin implements
             } catch (PackageManager.NameNotFoundException ignored) {
             }
         }
+        
+        boolean is2D = false;
+        if (applicationInfo.metaData == null)
+        {
+            is2D = true;
+        } else
+        {
+            String vrAppMode = applicationInfo.metaData.getString("com.samsung.android.vr.application.mode");
+            if (vrAppMode == null || !vrAppMode.equals("vr_only")) {
+                is2D = true;
+            }
+        }
+        map.put(AppDataConstants.IS_2D, is2D);
+
+        String uri = "";
+        Intent intent = packageManager.getLaunchIntentForPackage(pInfo.packageName);
+        if (intent == null)
+        {
+            intent = packageManager.getLeanbackLaunchIntentForPackage(pInfo.packageName);
+        }
+        if (intent != null)
+        {
+            uri = intent.getComponent().flattenToString();
+        }
+        map.put(AppDataConstants.URI, uri);
 
         return map;
     }
